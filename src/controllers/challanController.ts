@@ -13,31 +13,40 @@ import { createNotification } from "../models/notificationModel";
 import pool from "../db";
 
 // Issue a challan (Police only)
-export const issueChallan = async (req: AuthRequest, res: Response) => {
+export const issueChallan = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { vehicle_id, violation_type, amount } = req.body;
 
     if (!vehicle_id || !violation_type || !amount) {
-      return res.status(400).json({ success: false, message: "vehicle_id, violation_type, and amount are required" });
+      res.status(400).json({ success: false, message: "vehicle_id, violation_type, and amount are required" });
+      return;
     }
 
     const issued_by = req.user?.id;
 
     if (!issued_by) {
-      return res.status(401).json({ success: false, message: "User not authenticated" });
+      res.status(401).json({ success: false, message: "User not authenticated" });
+      return;
+    }
+
+    // Verify vehicle exists
+    const vehicleCheck = await pool.query("SELECT id, owner_id FROM vehicles WHERE id = $1", [vehicle_id]);
+    if (vehicleCheck.rows.length === 0) {
+      res.status(404).json({ success: false, message: "Vehicle not found" });
+      return;
     }
 
     const challan = await createChallan(vehicle_id, issued_by, violation_type, amount);
 
-    const vehicleResult = await pool.query("SELECT owner_id FROM vehicles WHERE id = $1", [vehicle_id]);
-    if (vehicleResult.rows[0]) {
-      await createNotification(vehicleResult.rows[0].owner_id, `A challan of ₹${amount} has been issued for violation: ${violation_type}`);
+    if (vehicleCheck.rows[0].owner_id) {
+      await createNotification(vehicleCheck.rows[0].owner_id, `A challan of ₹${amount} has been issued for violation: ${violation_type}`);
     }
 
     res.status(201).json({ success: true, message: "Challan issued", data: { challan } });
   } catch (error) {
     console.error("Error issuing challan:", error);
-    res.status(500).json({ success: false, message: "Failed to issue challan" });
+    const errorMessage = error instanceof Error ? error.message : "Failed to issue challan";
+    res.status(500).json({ success: false, message: "Failed to issue challan", error: errorMessage });
   }
 };
 

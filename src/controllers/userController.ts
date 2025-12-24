@@ -143,7 +143,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ success: false, message: "User not authenticated" });
     }
 
-    const user = await updateUserProfile(userId, { name, phone, address, date_of_birth, aadhaar_number });
+    const user = await updateUserProfile(userId, { name, phone, address, date_of_birth, aadhaar_number});
 
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });

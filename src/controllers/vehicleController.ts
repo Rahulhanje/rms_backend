@@ -90,6 +90,12 @@ export const verifyVehicleDocuments = async (req: AuthRequest, res: Response) =>
       return res.status(401).json({ success: false, message: "User not authenticated" });
     }
 
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      return res.status(400).json({ success: false, message: "Invalid vehicle ID format" });
+    }
+
     const vehicle = await verifyVehicle(id, officerId);
 
     if (!vehicle) {
@@ -101,7 +107,7 @@ export const verifyVehicleDocuments = async (req: AuthRequest, res: Response) =>
     res.json({ success: true, message: "Vehicle verified", data: { vehicle } });
   } catch (error) {
     console.error("Error verifying vehicle:", error);
-    res.status(500).json({ success: false, message: "Failed to verify vehicle" });
+    res.status(500).json({ success: false, message: error.message || "Failed to verify vehicle" });
   }
 };
 

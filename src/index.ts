@@ -1,5 +1,11 @@
-import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
+// Load environment variables FIRST before any other imports
+dotenv.config();
+
+// Allow self-signed certificates for Aiven PostgreSQL
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+import express, { Request, Response, NextFunction } from "express";
 import healthRoutes from "./routes/healthRoutes";
 import roleTestRoutes from "./routes/roleTestRoutes";
 import authRoutes from "./routes/authRoutes";
@@ -14,9 +20,6 @@ import appointmentRoutes from "./routes/appointmentRoutes";
 import notificationRoutes from "./routes/notificationRoutes";
 import analyticsRoutes from "./routes/analyticsRoutes";
 import { connectDB } from "./db";
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

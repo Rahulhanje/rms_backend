@@ -154,7 +154,7 @@ export const completeAnAppointment = async (req: AuthRequest, res: Response) => 
     const { id } = req.params;
     const { notes } = req.body;
     const officer_id = req.user?.id;
-
+    console.log(req.body)
     if (!officer_id) {
       return res.status(401).json({ success: false, message: "User not authenticated" });
     }
@@ -165,9 +165,9 @@ export const completeAnAppointment = async (req: AuthRequest, res: Response) => 
       return res.status(404).json({ success: false, message: "Appointment not found" });
     }
 
-    if (appointment.status !== "BOOKED") {
-      return res.status(400).json({ success: false, message: "Appointment is not in BOOKED status" });
-    }
+    // if (appointment.status !== "BOOKED") {
+    //   return res.status(400).json({ success: false, message: "Appointment is not in BOOKED status" });
+    // }
 
     const updatedAppointment = await completeAppointment(id, officer_id, notes);
     res.json({ success: true, message: "Appointment completed", data: { appointment: updatedAppointment } });
