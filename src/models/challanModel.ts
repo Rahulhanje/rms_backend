@@ -46,3 +46,20 @@ export const getChallansByUser = async (user_id: string): Promise<Challan[]> => 
   const result = await pool.query(query, [user_id]);
   return result.rows;
 };
+
+// Get challan by id
+export const getChallanById = async (id: string): Promise<Challan | null> => {
+  const query = `SELECT * FROM challans WHERE id = $1`;
+  const result = await pool.query(query, [id]);
+  return result.rows[0] || null;
+};
+
+// Update challan status
+export const updateChallanStatus = async (
+  id: string,
+  status: string
+): Promise<Challan | null> => {
+  const query = `UPDATE challans SET status = $1 WHERE id = $2 RETURNING *`;
+  const result = await pool.query(query, [status, id]);
+  return result.rows[0] || null;
+};
