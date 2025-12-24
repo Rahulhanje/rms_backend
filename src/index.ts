@@ -9,6 +9,7 @@ import drivingLicenseRoutes from "./routes/drivingLicenseRoutes";
 import challanRoutes from "./routes/challanRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import appointmentRoutes from "./routes/appointmentRoutes";
+import notificationRoutes from "./routes/notificationRoutes";
 import { connectDB } from "./db";
 
 // Load environment variables
@@ -30,6 +31,7 @@ app.use(drivingLicenseRoutes);
 app.use(challanRoutes);
 app.use(paymentRoutes);
 app.use(appointmentRoutes);
+app.use(notificationRoutes);
 
 // Connect to database, then start server
 const startServer = async () => {

@@ -2,6 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import { getDlApplicationById, updateDlApplicationStatus } from "../models/dlApplicationModel";
 import { createDrivingLicense, getDrivingLicenseByUserId } from "../models/drivingLicenseModel";
+import { createNotification } from "../models/notificationModel";
 
 // Approve a DL application (admin or officer only)
 export const approveApplication = async (req: AuthRequest, res: Response) => {
@@ -31,6 +32,9 @@ export const approveApplication = async (req: AuthRequest, res: Response) => {
     // Create the driving license
     const license = await createDrivingLicense(application.user_id);
 
+    // Notify the user
+    await createNotification(application.user_id, "Your driving license application has been approved!");
+
     res.json({ message: "Application approved and license issued", license });
   } catch (error) {
     console.error("Error approving application:", error);
@@ -56,6 +60,9 @@ export const rejectApplication = async (req: AuthRequest, res: Response) => {
 
     // Update application status to REJECTED
     const updatedApplication = await updateDlApplicationStatus(id, "REJECTED");
+
+    // Notify the user
+    await createNotification(application.user_id, "Your driving license application has been rejected.");
 
     res.json({ message: "Application rejected", application: updatedApplication });
   } catch (error) {

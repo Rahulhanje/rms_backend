@@ -1,6 +1,8 @@
 import { Response } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import { createChallan, getChallansByVehicle, getChallansByUser } from "../models/challanModel";
+import { createNotification } from "../models/notificationModel";
+import pool from "../db";
 
 // Issue a challan (police only)
 export const issueChallan = async (req: AuthRequest, res: Response) => {
@@ -19,6 +21,13 @@ export const issueChallan = async (req: AuthRequest, res: Response) => {
     }
 
     const challan = await createChallan(vehicle_id, issued_by, violation_type, amount);
+
+    // Notify the vehicle owner (get owner_id from vehicles table)
+    const vehicleResult = await pool.query("SELECT owner_id FROM vehicles WHERE id = $1", [vehicle_id]);
+    if (vehicleResult.rows[0]) {
+      await createNotification(vehicleResult.rows[0].owner_id, `A challan of ₹${amount} has been issued for violation: ${violation_type}`);
+    }
+
     res.status(201).json({ message: "Challan issued", challan });
   } catch (error) {
     console.error("Error issuing challan:", error);
