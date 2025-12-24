@@ -6,6 +6,7 @@ import userRoutes from "./routes/userRoutes";
 import rtoOfficeRoutes from "./routes/rtoOfficeRoutes";
 import dlApplicationRoutes from "./routes/dlApplicationRoutes";
 import drivingLicenseRoutes from "./routes/drivingLicenseRoutes";
+import challanRoutes from "./routes/challanRoutes";
 import { connectDB } from "./db";
 
 // Load environment variables
@@ -24,6 +25,7 @@ app.use(userRoutes);
 app.use(rtoOfficeRoutes);
 app.use(dlApplicationRoutes);
 app.use(drivingLicenseRoutes);
+app.use(challanRoutes);
 
 // Connect to database, then start server
 const startServer = async () => {

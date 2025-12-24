@@ -6,6 +6,7 @@ export const ROLES = {
   ADMIN: "ADMIN",
   OFFICER: "OFFICER",
   CITIZEN: "CITIZEN",
+  POLICE: "POLICE",
 };
 
 // Middleware to check if user has one of the allowed roles
